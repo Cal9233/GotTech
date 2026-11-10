@@ -40,6 +40,16 @@ function Footer() {
           Calvin Malagon
         </Nav.Link>
       </Nav.Item>
+      <Nav.Item as="li" id="button">
+        <Nav.Link
+          id="footertext"
+          href="https://remotive.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Jobs via Remotive
+        </Nav.Link>
+      </Nav.Item>
     </Nav>
   );
 }
