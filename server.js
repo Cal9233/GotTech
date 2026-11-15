@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const path = require('path');
 const app = express();
-const axios = require('axios');
+const { getJobs, searchJobs, MAX_RESULTS } = require('./remotive');
 
 // JUST FOR DEMO PURPOSES, PUT YOUR ACTUAL API CODE HERE
 app.get('/api/demo', (request, response) => {
@@ -15,13 +15,14 @@ app.get('/api/demo', (request, response) => {
 });
 // END DEMO
 
-// GETS ALL JOBS
+// GETS ALL JOBS (source: Remotive, software-dev category)
 app.get('/api/jobs', async (request, response) => {
   try {
-    const { data } = await axios.get(`https://jobs.github.com/positions.json`);
-    response.json(data);
+    const jobs = await getJobs();
+    response.json(jobs.slice(0, MAX_RESULTS));
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
+    response.status(502).json({ error: 'Job listings are unavailable right now.' });
   }
 });
 
@@ -30,11 +31,12 @@ app.get('/api/jobs/:search', async (request, response) => {
   const { search } = request.params;
 
   try {
-    const { data } = await axios.get(
-      `https://jobs.github.com/positions.json?search=${search}`
-    );
-    response.json(data);
-  } catch (error) {}
+    const jobs = await getJobs();
+    response.json(searchJobs(jobs, search).slice(0, MAX_RESULTS));
+  } catch (error) {
+    console.log(error.message);
+    response.status(502).json({ error: 'Job listings are unavailable right now.' });
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
